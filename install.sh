@@ -43,6 +43,12 @@ pipinstall() { \
 	yes | pip install "$1" >/dev/null 2>&1
 	}
 
+snapinstall() { \
+	dialog --title "Installation" --infobox "Installing the snap package \`$1\` ($n of $total). $1 $2" 5 70
+	command -v snap || installpkg snapd >/dev/null 2>&1
+	yes | snap install --classic "$1" >/dev/null 2>&1
+	}
+
 installationloop() { \
 	([ -f "$progsfile" ] && cp "$progsfile" /tmp/progs.csv) || curl -Ls "$progsfile" | sed '/^#/d' | eval grep "$grepseq" > /tmp/progs.csv
 	total=$(wc -l < /tmp/progs.csv)
@@ -50,6 +56,7 @@ installationloop() { \
 		n=$((n+1))
 		echo "$comment" | grep "^\".*\"$" >/dev/null 2>&1 && comment="$(echo "$comment" | sed "s/\(^\"\|\"$\)//g")"
 		case "$tag" in
+            S) snapinstall "$program" "$comment" ;;
             P) pipinstall "$program" "$comment" ;;
 			*) maininstall "$program" "$comment" ;;
 		esac
