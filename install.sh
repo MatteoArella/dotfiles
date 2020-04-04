@@ -18,7 +18,7 @@ while getopts ":r:b:p:h" o; do case "${o}" in
 esac done
 
 [ -z "$dotfilesrepo" ] && dotfilesrepo="https://github.com/MatteoArella/dotfiles.git"
-[ -z "$progsfile" ] && progsfile="https://raw.githubusercontent.com/MatteoArella/dotfiles/master/progs.csv?token=AE72XKRRSJXZMDVKXROEHXC6RDBPW"
+[ -z "$progsfile" ] && progsfile="https://raw.githubusercontent.com/MatteoArella/dotfiles/master/progs.csv"
 [ -z "$repobranch" ] && repobranch="master"
 
 ### FUNCTIONS ###
@@ -40,7 +40,7 @@ maininstall() { # Installs all needed programs from main repo.
 pipinstall() { \
 	dialog --title "Installation" --infobox "Installing the Python package \`$1\` ($n of $total). $1 $2" 5 70
 	command -v pip || installpkg python-pip >/dev/null 2>&1
-	yes | pip install "$1"
+	yes | pip install "$1" >/dev/null 2>&1
 	}
 
 installationloop() { \
