@@ -88,7 +88,7 @@ installationloop
 
 # Install the dotfiles in the user's home directory
 putgitrepo "$dotfilesrepo" "$HOME" "$repobranch"
-rm -f "$HOME/progs.csv"
+rm -f "$HOME/README.md" "$HOME/LICENSE" "$HOME/progs.csv"
 
 # Make zsh the default shell for the user.
 password=$(whiptail --passwordbox "please enter your secret password" 8 78 --title "Installation" 3>&1 1>&2 2>&3)
