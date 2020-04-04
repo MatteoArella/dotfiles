@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # inspired by
 # Luke's Auto Rice Boostrapping Script (LARBS)
@@ -29,7 +29,7 @@ grepseq="\"^[PGU]*,\""
 error() { clear; printf "ERROR:\\n%s\\n" "$1"; exit;}
 
 welcomemsg() { \
-	dialog --title "Welcome!" --msgbox "Welcome!\\n\\nThis script will automatically install a fully-featured Linux desktop." 10 60
+	whiptail --title "Welcome!" --msgbox "Welcome!\\n\\nThis script will automatically install a fully-featured Linux desktop." 10 60
 	}
 
 maininstall() { # Installs all needed programs from main repo.
@@ -60,22 +60,23 @@ putgitrepo() { # Downloads a gitrepo $1 and places the files in $2 only overwrit
 	[ -z "$3" ] && branch="master" || branch="$repobranch"
 	dir=$(mktemp -d)
 	[ ! -d "$2" ] && mkdir -p "$2"
-	chown -R "$USER":"$USER" "$dir" "$2"
+	sudo chown -R "$USER":"$USER" "$dir" "$2"
 	sudo -u "$USER" git clone -b "$branch" --depth 1 "$1" "$dir" >/dev/null 2>&1
 	sudo -u "$USER" cp -rfT "$dir" "$2"
 	}
 
 finalize(){ \
-	dialog --title "All done!" --msgbox "Congrats! Provided there were no hidden errors, the script completed successfully and all the programs and configuration files should be in place." 12 80
+	whiptail --title "All done!" --msgbox "Congrats! Provided there were no hidden errors, the script completed successfully and all the programs and configuration files should be in place." 12 80
 	}
 
 ### THE ACTUAL SCRIPT ###
 installpkg dialog || error "Are you sure you're running this as the root user and have an internet connection?"
+installpkg whiptail || error "Are you sure you're running this as the root user and have an internet connection?"
 
 # Welcome user and pick dotfiles.
 welcomemsg || error "User exited."
 
-dialog --keep-tite --title "Installation" --infobox "Installing \`basedevel\` and \`git\` for installing other software required for the installation of other programs." 5 70
+whiptail --title "Installation" --infobox "Installing \`basedevel\` and \`git\` for installing other software required for the installation of other programs." 5 70
 installpkg curl
 installpkg base-devel
 installpkg git
@@ -87,10 +88,11 @@ installationloop
 
 # Install the dotfiles in the user's home directory
 putgitrepo "$dotfilesrepo" "$HOME" "$repobranch"
-rm -f "$HOME/README.md" "$HOME/LICENSE" "$HOME/progs.csv"
+rm -f "$HOME/progs.csv"
 
 # Make zsh the default shell for the user.
-chsh -s $(which zsh)
+password=$(whiptail --passwordbox "please enter your secret password" 8 78 --title "Installation" 3>&1 1>&2 2>&3)
+sudo -S chsh -s $(which zsh) "${USER}" <<< $password
 
 # Install Oh My Zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
