@@ -1,0 +1,11 @@
+#!/bin/sh
+if [[ $1 -eq "mute" ]]; then
+	for SINK in `pacmd list-sinks | grep 'index:' | cut -b12-`; do
+	  pactl set-sink-mute $SINK toggle
+	done
+	exit 0
+fi
+VOLUME=$1
+for SINK in `pacmd list-sinks | grep 'index:' | cut -b12-`; do
+  pactl set-sink-volume $SINK $VOLUME
+done
