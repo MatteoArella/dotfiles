@@ -20,6 +20,7 @@
 ,atool,"manages and gives information about archives."
 ,fonts-font-awesome,"font awesome."
 ,fonts-powerline,"powerline fonts."
+G,https://github.com/powerline/fonts.git,"patched fonts for Powerline users."
 P,bumblebee-status,"i3 status bar."
 ,lm-sensors,"utility for reading sensors."
 P,psutil,"library for process and system monitoring."

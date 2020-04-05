@@ -49,6 +49,16 @@ snapinstall() { \
 	yes | snap install --classic "$1" >/dev/null 2>&1
 	}
 
+gitinstall() {
+	progname="$(basename "$1")"
+	dir=$(mktemp -d)
+	sudo -u "$USER" chown -R "$USER":"$USER" "$dir"
+	dialog --title "Installation" --infobox "Installing \`$progname\` ($n of $total) via \`git\`. $(basename "$1") $2" 5 70
+	sudo -u "$USER" git clone --depth 1 "$1" "$dir" >/dev/null 2>&1
+	cd "$dir" || exit
+	./install.sh >/dev/null 2>&1
+	}
+
 installationloop() { \
 	([ -f "$progsfile" ] && cp "$progsfile" /tmp/progs.csv) || curl -Ls "$progsfile" | sed '/^#/d' | eval grep "$grepseq" > /tmp/progs.csv
 	total=$(wc -l < /tmp/progs.csv)
@@ -57,6 +67,7 @@ installationloop() { \
 		echo "$comment" | grep "^\".*\"$" >/dev/null 2>&1 && comment="$(echo "$comment" | sed "s/\(^\"\|\"$\)//g")"
 		case "$tag" in
             S) snapinstall "$program" "$comment" ;;
+			G) gitinstall "$program" "$comment" ;;
             P) pipinstall "$program" "$comment" ;;
 			*) maininstall "$program" "$comment" ;;
 		esac
@@ -76,16 +87,16 @@ finalize(){ \
 	}
 
 ### THE ACTUAL SCRIPT ###
-installpkg dialog || error "Are you sure you're running this as the root user and have an internet connection?"
-installpkg whiptail || error "Are you sure you're running this as the root user and have an internet connection?"
+#installpkg dialog || error "Are you sure you're running this as the root user and have an internet connection?"
+#installpkg whiptail || error "Are you sure you're running this as the root user and have an internet connection?"
 
 # Welcome user and pick dotfiles.
-welcomemsg || error "User exited."
+#welcomemsg || error "User exited."
 
-whiptail --title "Installation" --infobox "Installing \`basedevel\` and \`git\` for installing other software required for the installation of other programs." 5 70
-installpkg curl
-installpkg base-devel
-installpkg git
+#whiptail --title "Installation" --infobox "Installing \`basedevel\` and \`git\` for installing other software required for the installation of other programs." 5 70
+#installpkg curl
+#installpkg base-devel
+#installpkg git
 
 
 # The command that does all the installing. Reads the progs.csv file and
@@ -93,15 +104,15 @@ installpkg git
 installationloop
 
 # Install the dotfiles in the user's home directory
-putgitrepo "$dotfilesrepo" "$HOME/.dotfiles" "$repobranch"
+#putgitrepo "$dotfilesrepo" "$HOME/.dotfiles" "$repobranch"
 
 # Make zsh the default shell for the user.
-password=$(whiptail --passwordbox "please enter your secret password" 8 78 --title "Installation" 3>&1 1>&2 2>&3)
-sudo -S chsh -s $(which zsh) "${USER}" <<< $password
+#password=$(whiptail --passwordbox "please enter your secret password" 8 78 --title "Installation" 3>&1 1>&2 2>&3)
+#sudo -S chsh -s $(which zsh) "${USER}" <<< $password
 
 # Install Oh My Zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+#sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 # Last message! Install complete!
-finalize
-clear
+#finalize
+#clear
