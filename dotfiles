@@ -5,7 +5,7 @@ usage() {
 Usage: $0 {install | uninstall | update} [<package 1> <package 2> ...]
     install:   creates symlinks to dotfiles
     uninstall: removes symlinks
-    update: removes and then re-creates symlinks
+    reinstall: removes and then re-creates symlinks
 EOF
 }
 
@@ -37,7 +37,7 @@ case "$1" in
         main --stow "${@:2}";;
     uninstall)
         main --delete "${@:2}";;
-    update)
+    reinstall)
         main --restow "${@:2}";;
     *)
         usage; exit 1;;
