@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+usage() {
+    cat << EOF
+Usage: $0 {install | uninstall | update}
+    install:   creates symlinks to dotfiles
+    uninstall: removes symlinks
+    update: removes and then re-creates symlinks
+EOF
+}
+
+main() {
+    args="${@:2}"
+    [ -z "$args" ] && args=( `awk -F":" '{print $1}' index` ) # if no target specified considers all packages in index file
+    
+    for package in "${args[@]}"; do
+        if [ -d "$package" ]; then
+            array=( `grep "^$package:" index` )
+
+            if [ -z "$array" ]; then
+                dir="$HOME/.config/$package"
+            else
+                dir=${array[1]}
+            fi
+
+            eval "mkdir -p $dir"
+            eval "stow --verbose=1 -t $dir --stow $package"
+        else
+            echo "Error: directory \"$package\" not found"
+            return 1
+        fi
+    done
+}
+
+case "$1" in
+    install)
+        main --stow "${@:2}";;
+    uninstall)
+        main --delete "${@:2}";;
+    update)
+        main --restow "${@:2}";;
+    *)
+        usage; exit 1;;
+esac

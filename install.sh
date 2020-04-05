@@ -65,11 +65,10 @@ installationloop() { \
 putgitrepo() { # Downloads a gitrepo $1 and places the files in $2 only overwriting conflicts
 	dialog --infobox "Downloading and installing config files..." 4 60
 	[ -z "$3" ] && branch="master" || branch="$repobranch"
-	dir=$(mktemp -d)
 	[ ! -d "$2" ] && mkdir -p "$2"
-	sudo chown -R "$USER":"$USER" "$dir" "$2"
-	sudo -u "$USER" git clone -b "$branch" --depth 1 "$1" "$dir" >/dev/null 2>&1
-	sudo -u "$USER" cp -rfT "$dir" "$2"
+	sudo chown -R "$USER":"$USER" "$2"
+	sudo -u "$USER" git clone -b "$branch" "$1" "$2" >/dev/null 2>&1
+	eval "$2/dotfiles install"
 	}
 
 finalize(){ \
@@ -94,8 +93,7 @@ installpkg git
 installationloop
 
 # Install the dotfiles in the user's home directory
-putgitrepo "$dotfilesrepo" "$HOME" "$repobranch"
-rm -f "$HOME/README.md" "$HOME/LICENSE" "$HOME/progs.csv"
+putgitrepo "$dotfilesrepo" "$HOME/.dotfiles" "$repobranch"
 
 # Make zsh the default shell for the user.
 password=$(whiptail --passwordbox "please enter your secret password" 8 78 --title "Installation" 3>&1 1>&2 2>&3)
