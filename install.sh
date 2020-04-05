@@ -87,16 +87,16 @@ finalize(){ \
 	}
 
 ### THE ACTUAL SCRIPT ###
-#installpkg dialog || error "Are you sure you're running this as the root user and have an internet connection?"
-#installpkg whiptail || error "Are you sure you're running this as the root user and have an internet connection?"
+installpkg dialog || error "Are you sure you're running this as the root user and have an internet connection?"
+installpkg whiptail || error "Are you sure you're running this as the root user and have an internet connection?"
 
 # Welcome user and pick dotfiles.
-#welcomemsg || error "User exited."
+welcomemsg || error "User exited."
 
-#whiptail --title "Installation" --infobox "Installing \`basedevel\` and \`git\` for installing other software required for the installation of other programs." 5 70
-#installpkg curl
-#installpkg base-devel
-#installpkg git
+whiptail --title "Installation" --infobox "Installing \`basedevel\` and \`git\` for installing other software required for the installation of other programs." 5 70
+installpkg curl
+installpkg base-devel
+installpkg git
 
 
 # The command that does all the installing. Reads the progs.csv file and
@@ -104,15 +104,15 @@ finalize(){ \
 installationloop
 
 # Install the dotfiles in the user's home directory
-#putgitrepo "$dotfilesrepo" "$HOME/.dotfiles" "$repobranch"
+putgitrepo "$dotfilesrepo" "$HOME/.dotfiles" "$repobranch"
 
 # Make zsh the default shell for the user.
-#password=$(whiptail --passwordbox "please enter your secret password" 8 78 --title "Installation" 3>&1 1>&2 2>&3)
-#sudo -S chsh -s $(which zsh) "${USER}" <<< $password
+password=$(whiptail --passwordbox "please enter your secret password" 8 78 --title "Installation" 3>&1 1>&2 2>&3)
+sudo -S chsh -s $(which zsh) "${USER}" <<< $password
 
 # Install Oh My Zsh
-#sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 # Last message! Install complete!
-#finalize
-#clear
+finalize
+clear
