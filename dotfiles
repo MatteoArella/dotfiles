@@ -2,7 +2,7 @@
 
 usage() {
     cat << EOF
-Usage: $0 {install | uninstall | update}
+Usage: $0 {install | uninstall | update} [<package 1> <package 2> ...]
     install:   creates symlinks to dotfiles
     uninstall: removes symlinks
     update: removes and then re-creates symlinks
@@ -24,7 +24,7 @@ main() {
             fi
 
             eval "mkdir -p $dir"
-            eval "stow --verbose=1 -t $dir --stow $package"
+            eval "stow --verbose=1 -t $dir $1 $package"
         else
             echo "Error: directory \"$package\" not found"
             return 1
